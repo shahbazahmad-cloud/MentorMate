@@ -1,0 +1,39 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "User profile.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "email": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["userId", "email", "createdAt"]
+    },
+    "Session": {
+      "title": "Session",
+      "description": "Study session details and history",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "filename": { "type": "string" },
+        "pdfData": { "type": "string" },
+        "duration": { "type": "integer" },
+        "startedAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["userId", "filename", "duration", "startedAt"]
+    }
+  },
+  "firestore": {
+    "users/{userId}": {
+      "schema": { "$ref": "#/entities/User" },
+      "description": "Stores user profiles."
+    },
+    "sessions/{sessionId}": {
+      "schema": { "$ref": "#/entities/Session" },
+      "description": "Stores all study sessions for users. Used to track progress over time."
+    }
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "name": "MentorMate",
+  "description": "AI-powered study platform with intelligent chat, PDF interaction, customizable notes generation, voice transcription, and study progress tracking.",
+  "requestFramePermissions": [
+    "microphone"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

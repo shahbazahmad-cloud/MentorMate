@@ -1,0 +1,21 @@
+@import "tailwindcss";
+
+@layer utilities {
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background-color: #cbd5e1;
+    border-radius: 10px;
+  }
+  
+  /* fix for react-pdf canvas rendering over things */
+  .react-pdf__Page__canvas {
+    max-width: 100%;
+    height: auto !important;
+  }
+}

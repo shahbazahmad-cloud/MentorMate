@@ -1,0 +1,46 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isSignedIn() { return request.auth != null; }
+    function isValidId(id) { return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$'); }
+    function incoming() { return request.resource.data; }
+    function existing() { return resource.data; }
+
+    function isValidUser(data) {
+      return data.userId == request.auth.uid && data.email is string;
+    }
+
+    match /users/{userId} {
+      allow get: if isSignedIn() && isValidId(userId) && request.auth.uid == userId;
+      allow create: if isSignedIn() && isValidId(userId) && request.auth.uid == userId && 
+                       isValidUser(incoming());
+      // No updates to user profile allowed for now
+      allow update: if false;
+      allow delete: if false;
+      allow list: if false;
+    }
+
+    function isValidSession(data) {
+      return data.userId is string && data.userId == request.auth.uid &&
+             data.filename is string &&
+             data.duration is number &&
+             data.startedAt is string;
+    }
+
+    match /sessions/{sessionId} {
+      allow get: if isSignedIn() && isValidId(sessionId) && existing().userId == request.auth.uid;
+      allow create: if isSignedIn() && isValidId(sessionId) && isValidSession(incoming()) && incoming().userId == request.auth.uid && exists(/databases/$(database)/documents/users/$(request.auth.uid));
+      allow update: if isSignedIn() && isValidId(sessionId) && existing().userId == request.auth.uid && isValidSession(incoming()) && incoming().userId == existing().userId && incoming().startedAt == existing().startedAt && incoming().filename == existing().filename;
+      allow delete: if isSignedIn() && isValidId(sessionId) && existing().userId == request.auth.uid;
+      allow list: if isSignedIn() && resource.data.userId == request.auth.uid;
+
+      match /pdfChunks/{chunkId} {
+        allow read, write, delete: if isSignedIn() && isValidId(sessionId) && get(/databases/$(database)/documents/sessions/$(sessionId)).data.userId == request.auth.uid;
+      }
+    }
+  }
+}
